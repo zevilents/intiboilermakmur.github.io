@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Farm Performance Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec13",
+                        "primary-dark": "#0ea60e",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102210",
+                    },
+                    fontFamily: {"display": ["Inter", "sans-serif"]},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex flex-col">
+    <header class="sticky top-0 z-50 w-full bg-white dark:bg-[#1a331a] border-b border-slate-200 dark:border-slate-800 shadow-sm">
+        <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex h-16 items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20 text-primary-dark dark:text-primary">
+                        <span class="material-symbols-outlined text-2xl">agriculture</span>
+                    </div>
+                    <span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">FarmOps</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+            <div>
+                <div class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-1">
+                    <span>Farm A</span>
+                    <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+                    <span>Flock #24-B</span>
+                </div>
+                <h1 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Farm Performance</h1>
+                <p class="text-slate-500 dark:text-slate-400 mt-1">Overview of current flock statistics and daily metrics</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-10">
+            <div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <span class="material-symbols-outlined text-4xl text-primary">groups</span>
+                </div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Remaining Birds</p>
+                <div class="flex items-baseline gap-2">
+                    <h3 id="out-remaining" class="text-2xl font-bold text-slate-900 dark:text-white">Memuat...</h3>
+                </div>
+            </div>
+            
+            <div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <span class="material-symbols-outlined text-4xl text-primary">heart_broken</span>
+                </div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Total Depletion</p>
+                <div class="flex items-baseline gap-2">
+                    <h3 id="out-depletion" class="text-2xl font-bold text-slate-900 dark:text-white">Memuat...</h3>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group border-l-4 border-l-primary">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <span class="material-symbols-outlined text-4xl text-primary">scale</span>
+                </div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">FCR (Ratio)</p>
+                <div class="flex items-baseline gap-2">
+                    <h3 id="out-fcr" class="text-2xl font-bold text-slate-900 dark:text-white">Memuat...</h3>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <span class="material-symbols-outlined text-4xl text-primary">monitoring</span>
+                </div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">ADG (Daily Gain)</p>
+                <div class="flex items-baseline gap-2">
+                    <h3 id="out-adg" class="text-2xl font-bold text-slate-900 dark:text-white">Memuat...</h3>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <span class="material-symbols-outlined text-4xl text-primary">verified</span>
+                </div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Perf. Index (IP)</p>
+                <div class="flex items-baseline gap-2">
+                    <h3 id="out-ip" class="text-2xl font-bold text-slate-900 dark:text-white">Memuat...</h3>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const { createClient } = supabase;
+        const supabaseUrl = 'https://bekptahcteewjcmvpxdr.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJla3B0YWhjdGVld2pjbXZweGRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4MTA1NzEsImV4cCI6MjA4NzM4NjU3MX0.-_idUGrT45dN-7AmT4ywCEgcms_TqtbhOdq6kJmbCzQ';
+        const _supabase = createClient(supabaseUrl, supabaseKey);
+
+        // Standar DOC
+        const populasiAwal = 28500; 
+        const beratDOC = 40; 
+
+        window.addEventListener('DOMContentLoaded', async (event) => {
+            
+            // Tarik SEMUA data dari database, urutkan berdasarkan umur
+            const { data, error } = await _supabase
+                .from('recording_harian')
+                .select('*')
+                .order('umur', { ascending: true });
+
+            if (error) {
+                alert("Error mengambil data dari cloud");
+                console.error(error);
+                return;
+            }
+
+            // Kalau datanya ada, langsung kalkulasi
+            if (data && data.length > 0) {
+                let totalMati = 0;
+                let totalPakan = 0;
+                let umurTerakhir = 0;
+                let bwTerakhir = 0;
+
+                data.forEach(row => {
+                    totalMati += (row.kematian + row.culling);
+                    totalPakan += row.pakan_kg;
+                    umurTerakhir = row.umur; 
+                    bwTerakhir = row.bw_gram;
+                });
+
+                // Rumus Evaluasi Broiler
+                let sisaAyam = populasiAwal - totalMati;
+                let survivalRate = (sisaAyam / populasiAwal) * 100;
+                let deplesi = (totalMati / populasiAwal) * 100;
+                
+                let totalBeratKg = (sisaAyam * bwTerakhir) / 1000;
+                let fcr = totalPakan / totalBeratKg;
+                let adg = (bwTerakhir - beratDOC) / umurTerakhir;
+                let ip = (survivalRate * (bwTerakhir / 1000) / (fcr * umurTerakhir)) * 100;
+
+                // Lempar hasil ke HTML
+                document.getElementById('out-remaining').innerText = sisaAyam.toLocaleString('id-ID');
+                document.getElementById('out-depletion').innerText = deplesi.toFixed(2) + "%";
+                document.getElementById('out-fcr').innerText = isNaN(fcr) || !isFinite(fcr) ? "0.00" : fcr.toFixed(3);
+                document.getElementById('out-adg').innerText = isNaN(adg) || !isFinite(adg) ? "0g" : Math.round(adg) + "g";
+                document.getElementById('out-ip').innerText = isNaN(ip) || !isFinite(ip) ? "0" : Math.round(ip);
+            } else {
+                // Jika tabel masih kosong
+                document.getElementById('out-remaining').innerText = populasiAwal.toLocaleString('id-ID');
+                document.getElementById('out-depletion').innerText = "0%";
+                document.getElementById('out-fcr').innerText = "0.00";
+                document.getElementById('out-adg').innerText = "0g";
+                document.getElementById('out-ip').innerText = "0";
+            }
+        });
+    </script>
+</body>
+</html>
